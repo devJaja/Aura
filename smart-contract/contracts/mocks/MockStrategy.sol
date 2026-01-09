@@ -11,9 +11,9 @@ contract MockStrategy is IStrategy, Ownable {
 
     uint256 public totalAssetsInvested;
 
-    constructor(address _asset, address _vault) Ownable(msg.sender) {
+    constructor(address _asset, address __vault) Ownable(msg.sender) {
         asset = _asset;
-        _vault = _vault;
+        _vault = __vault;
     }
 
     function invest(uint256 _amount) external override {
