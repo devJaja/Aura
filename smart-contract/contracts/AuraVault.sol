@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.28;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
@@ -37,9 +37,9 @@ contract AuraVault is ERC4626, Ownable {
      * @notice A public function to deposit assets. Overrides the internal one to add custom logic.
      * @dev Future logic for routing to strategies will be added here.
      */
-    function deposit(uint256 assets, address receiver) public override {
+    function deposit(uint256 assets, address receiver) public override returns (uint256) {
         // TODO: Add logic to allocate assets to different strategies
-        super.deposit(assets, receiver);
+        return super.deposit(assets, receiver);
     }
 
     /**
@@ -50,9 +50,9 @@ contract AuraVault is ERC4626, Ownable {
         uint256 assets,
         address receiver,
         address owner
-    ) public override {
+    ) public override returns (uint256) {
         // TODO: Add logic to pull assets from different strategies
-        super.withdraw(assets, receiver, owner);
+        return super.withdraw(assets, receiver, owner);
     }
 
     /**
@@ -63,9 +63,9 @@ contract AuraVault is ERC4626, Ownable {
         uint256 shares,
         address receiver,
         address owner
-    ) public override {
+    ) public override returns (uint256) {
         // TODO: Add logic to pull assets from different strategies
-        super.redeem(shares, receiver, owner);
+        return super.redeem(shares, receiver, owner);
     }
 
     // --- Strategy Management ---
@@ -108,7 +108,7 @@ contract AuraVault is ERC4626, Ownable {
         // the profit (_profitAmount) of the underlying asset to this vault contract,
         // the total assets of the vault increase, which in turn increases the value of each share.
         // The strategy contract must transfer the underlying asset to this vault.
-        require(asset.transferFrom(msg.sender, address(this), _profitAmount), "Profit transfer failed");
+        require(IERC20(address(asset)).transferFrom(msg.sender, address(this), _profitAmount), "Profit transfer failed");
     }
 
 

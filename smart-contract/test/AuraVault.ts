@@ -16,7 +16,7 @@ describe("AuraVault", function () {
 
         // Deploy a mock ERC20 token
         const MockERC20 = await ethers.getContractFactory("MockERC20", owner);
-        underlyingToken = await MockERC20.deploy("Mock Token", "MTKN", 18);
+        underlyingToken = await MockERC20.deploy("Mock Token", "MTKN");
         const underlyingAddress = await underlyingToken.getAddress();
 
         // Distribute tokens to users
