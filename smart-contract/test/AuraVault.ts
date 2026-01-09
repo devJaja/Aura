@@ -10,14 +10,12 @@ describe("AuraVault", function () {
     let vault: AuraVault;
     let underlyingToken: Contract;
     let owner: HardhatEthersSigner, user1: HardhatEthersSigner, user2: HardhatEthersSigner;
-    let initialBalance: BigNumberish;
-
     beforeEach(async function () {
-        initialBalance = ethers.parseUnits("1000", 18);
-        [owner, user1, user2] = await ethers.getSigners();
+        [owner, user1, user2] = await hre.ethers.getSigners();
+        const initialBalance = hre.ethers.parseUnits("1000", 18);
 
         // Deploy a mock ERC20 token
-        const MockERC20 = await ethers.getContractFactory("MockERC20", owner);
+        const MockERC20 = await hre.ethers.getContractFactory("MockERC20", owner);
         underlyingToken = await MockERC20.deploy("Mock Token", "MTKN");
         const underlyingAddress = await underlyingToken.getAddress();
 
@@ -26,7 +24,7 @@ describe("AuraVault", function () {
         await underlyingToken.mint(user2.address, initialBalance);
 
         // Deploy the AuraVault
-        AuraVault = await ethers.getContractFactory("AuraVault", owner);
+        AuraVault = await hre.ethers.getContractFactory("AuraVault", owner);
         vault = await AuraVault.deploy(underlyingAddress, "Aura Vault Token", "AVT");
         await vault.waitForDeployment();
     });
@@ -48,13 +46,13 @@ describe("AuraVault", function () {
 
     describe("Deposits and Withdrawals", function () {
         beforeEach(async function () {
-            const depositAmount = ethers.parseUnits("100", 18);
+            const depositAmount = hre.ethers.parseUnits("100", 18);
             await underlyingToken.connect(user1).approve(await vault.getAddress(), depositAmount);
             await vault.connect(user1).deposit(depositAmount, user1.address);
         });
 
         it("should handle deposits correctly", async function () {
-            const depositAmount = ethers.parseUnits("100", 18);
+            const depositAmount = hre.ethers.parseUnits("100", 18);
             // Check vault balance
             expect(await vault.totalAssets()).to.equal(depositAmount);
             // Check user shares
@@ -63,7 +61,7 @@ describe("AuraVault", function () {
 
         it("should handle withdrawals correctly", async function () {
             const initialVaultAssets = await vault.totalAssets();
-            const withdrawAmount = ethers.parseUnits("50", 18);
+            const withdrawAmount = hre.ethers.parseUnits("50", 18);
 
             await vault.connect(user1).withdraw(withdrawAmount, user1.address, user1.address);
 
@@ -76,7 +74,7 @@ describe("AuraVault", function () {
 
         it("should handle redeem correctly", async function () {
             const initialShares = await vault.balanceOf(user1.address);
-            const redeemShares = ethers.parseUnits("50", 18);
+            const redeemShares = hre.ethers.parseUnits("50", 18);
 
             await vault.connect(user1).redeem(redeemShares, user1.address, user1.address);
 
