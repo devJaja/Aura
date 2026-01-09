@@ -108,7 +108,7 @@ contract AuraVault is ERC4626, Ownable {
         // the profit (_profitAmount) of the underlying asset to this vault contract,
         // the total assets of the vault increase, which in turn increases the value of each share.
         // The strategy contract must transfer the underlying asset to this vault.
-        require(IERC20(address(asset)).transferFrom(msg.sender, address(this), _profitAmount), "Profit transfer failed");
+        require(IERC20(asset()).transferFrom(msg.sender, address(this), _profitAmount), "Profit transfer failed");
     }
 
 

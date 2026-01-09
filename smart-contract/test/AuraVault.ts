@@ -1,17 +1,19 @@
-import { ethers } from "hardhat";
+import hre from "hardhat";
 import { expect } from "chai";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import { Contract, ContractFactory } from "ethers";
+import { BigNumberish, Contract, ContractFactory } from "ethers";
 import { AuraVault } from "../typechain-types";
 
 describe("AuraVault", function () {
+
     let AuraVault: ContractFactory;
     let vault: AuraVault;
     let underlyingToken: Contract;
     let owner: HardhatEthersSigner, user1: HardhatEthersSigner, user2: HardhatEthersSigner;
-    const initialBalance = ethers.parseUnits("1000", 18);
+    let initialBalance: BigNumberish;
 
     beforeEach(async function () {
+        initialBalance = ethers.parseUnits("1000", 18);
         [owner, user1, user2] = await ethers.getSigners();
 
         // Deploy a mock ERC20 token
