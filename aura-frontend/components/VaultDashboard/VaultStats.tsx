@@ -21,9 +21,10 @@ export const VaultStats = () => {
     chainId: mainnet.id,
   });
 
-  const formattedTotalAssets = totalAssetsData
-    ? `$${Number(formatUnits(totalAssetsData, 6)).toLocaleString()}` // Assuming 6 decimals for USDC/DAI
-    : "$0";
+  const formattedTotalAssets =
+    totalAssetsData !== undefined && totalAssetsData !== null
+      ? `$${Number(formatUnits(totalAssetsData as bigint, 6)).toLocaleString()}` // Assuming 6 decimals for USDC/DAI
+      : "$0";
 
   const stats = [
     {
@@ -40,7 +41,7 @@ export const VaultStats = () => {
     },
     {
       name: "Current Vault Strategy",
-      value: vaultNameData || "RWA Arbitrage #3",
+      value: typeof vaultNameData === "string" ? vaultNameData : "RWA Arbitrage #3",
       change: "Stable",
       icon: BrainCircuit,
     },

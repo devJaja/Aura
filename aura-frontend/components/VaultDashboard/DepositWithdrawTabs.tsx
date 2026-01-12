@@ -180,7 +180,8 @@ const DepositTab = () => {
           <p className="font-mono text-lg">
             {userAssetBalance !== undefined && userAssetBalance !== null && typeof assetDecimals === "number"
               ? formatUnits(userAssetBalance as bigint, assetDecimals)
-              : "0.00"} {assetSymbol || "USDC"}
+              : "0.00"}{" "}
+            {typeof assetSymbol === "string" ? assetSymbol : "USDC"}
           </p>
         </div>
       </div>
@@ -194,7 +195,7 @@ const DepositTab = () => {
           onChange={(e) => setDepositAmount(e.target.value)}
         />
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xl font-semibold text-neutral-500">
-          {assetSymbol || "USDC"}
+          {typeof assetSymbol === "string" ? assetSymbol : "USDC"}
         </span>
       </div>
 
@@ -259,7 +260,10 @@ const WithdrawTab = () => {
     },
   });
 
-  const parsedWithdrawAmount = withdrawAmount && vaultDecimals ? parseUnits(withdrawAmount as `${number}`, vaultDecimals) : 0n;
+  const parsedWithdrawAmount =
+    withdrawAmount && typeof vaultDecimals === "number"
+      ? parseUnits(withdrawAmount as `${number}`, vaultDecimals)
+      : 0n;
 
   // Withdraw transaction
   const {
@@ -295,7 +299,8 @@ const WithdrawTab = () => {
           <p className="font-mono text-lg">
             {userVaultBalance !== undefined && userVaultBalance !== null && typeof vaultDecimals === "number"
               ? formatUnits(userVaultBalance as bigint, vaultDecimals)
-              : "0.00"} {vaultSymbol || "aToken"}
+              : "0.00"}{" "}
+            {typeof vaultSymbol === "string" ? vaultSymbol : "aToken"}
           </p>
         </div>
       </div>
@@ -309,7 +314,7 @@ const WithdrawTab = () => {
           onChange={(e) => setWithdrawAmount(e.target.value)}
         />
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xl font-semibold text-neutral-500">
-          {vaultSymbol || "aToken"}
+          {typeof vaultSymbol === "string" ? vaultSymbol : "aToken"}
         </span>
       </div>
 
