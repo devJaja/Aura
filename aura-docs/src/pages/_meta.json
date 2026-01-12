@@ -1,0 +1,7 @@
+// aura-docs/src/pages/_meta.json
+{
+  "index": "Introduction",
+  "getting-started": "Getting Started",
+  "smart-contracts": "Smart Contracts",
+  "frontend-usage": "Frontend Usage"
+}
