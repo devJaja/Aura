@@ -1,29 +1,94 @@
-# Smart Contracts
+# Smart Contracts Overview
 
-This section details the AURA Protocol smart contracts, including:
-- AuraVault.sol
-- IStrategy.sol
+This section provides a detailed look into the core smart contracts that power the AURA Protocol. Understanding these contracts is crucial for developers and users seeking to comprehend the underlying mechanics of the vault and its strategies.
 
-### AuraVault.sol
+## AuraVault.sol
 
-**Overview:** [Describe the purpose of AuraVault, its core functionalities, and how it interacts with strategies and assets.]
+The `AuraVault` contract is the central component of the AURA Protocol. It is an ERC-4626 compliant vault designed to manage user deposits, execute strategies, and distribute profits. It acts as a secure custodian for stablecoin assets and an orchestrator for various yield-generating strategies.
 
-**Functions:**
-- `deposit(uint256 assets, address receiver)`: [Explanation]
-- `withdraw(uint256 assets, address receiver, address owner)`: [Explanation]
-- `totalAssets()`: [Explanation]
-- `asset()`: [Explanation]
-- `addStrategy(IStrategy _strategy)`: [Explanation]
-- `removeStrategy(IStrategy _strategy)`: [Explanation]
-- `strategies(uint256)`: [Explanation]
+**Inherits:** ERC4626, Ownable, Pausable, ERC20
 
-**Events:**
-- `Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)`: [Explanation]
-- `Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)`: [Explanation]
+### Key Functions & Interactions
 
-### IStrategy.sol
+Here's an overview of the most important functions within `AuraVault.sol`:
 
-**Overview:** [Describe the purpose of the IStrategy interface, its role in defining how strategies interact with the vault.]
+#### Deposit & Withdrawal
 
-**Functions (Interface):**
-- [List interface functions and their explanations]
+-   `deposit(uint256 assets, address receiver) public returns (uint256)`:
+    Allows users to deposit `assets` (stablecoins) into the vault. The `receiver` address will receive the corresponding amount of vault shares (aTokens).
+-   `withdraw(uint256 assets, address receiver, address owner) public returns (uint256)`:
+    Enables users to withdraw `assets` (stablecoins) from the vault. The `owner` must approve the withdrawal of their shares, and the `receiver` receives the underlying assets.
+-   `mint(uint256 shares, address receiver) public returns (uint256)`:
+    Mints a specific amount of vault `shares` for the `receiver` in exchange for underlying `assets`.
+-   `redeem(uint256 shares, address receiver, address owner) public returns (uint256)`:
+    Redeems a specific amount of vault `shares` from the `owner`, sending the underlying `assets` to the `receiver`.
+
+#### Asset & Balance Information
+
+-   `asset() public view returns (address)`:
+    Returns the address of the underlying ERC-20 stablecoin asset managed by the vault.
+-   `totalAssets() public view returns (uint256)`:
+    Returns the total amount of underlying assets currently held by the vault across its reserves and active strategies.
+-   `balanceOf(address account) public view returns (uint256)`:
+    Returns the amount of vault shares (aTokens) held by a specific `account`.
+-   `convertToShares(uint256 assets) public view returns (uint256)`:
+    Calculates the amount of vault shares that would be received for a given amount of `assets`.
+-   `convertToAssets(uint256 shares) public view returns (uint256)`:
+    Calculates the amount of underlying `assets` that would be received for a given amount of `shares`.
+-   `previewDeposit(uint256 assets) public view returns (uint256)`:
+    Simulates a deposit to show how many shares would be minted for a given `assets` amount.
+-   `previewWithdraw(uint256 assets) public view returns (uint256)`:
+    Simulates a withdrawal to show how many shares would be burned for a given `assets` amount.
+
+#### Strategy Management (Owner-only)
+
+-   `addStrategy(contract IStrategy _strategy) public onlyOwner`:
+    Allows the contract `owner` to add a new approved strategy to the vault. Strategies must conform to the `IStrategy` interface.
+-   `removeStrategy(contract IStrategy _strategy) public onlyOwner`:
+    Allows the contract `owner` to remove an existing strategy from the vault.
+-   `isStrategy(address) public view returns (bool)`:
+    Checks if a given address is a currently registered and active strategy.
+-   `strategies(uint256) public view returns (contract IStrategy)`:
+    Allows querying registered strategies by index.
+
+#### Administrative (Owner-only & Pausable)
+
+-   `owner() public view returns (address)`: Returns the address of the contract owner.
+-   `transferOwnership(address newOwner) public onlyOwner`: Transfers ownership of the contract.
+-   `renounceOwnership() public onlyOwner`: Renounces ownership of the contract.
+-   `pause() public onlyOwner`: Pauses all critical operations of the vault.
+-   `unpause() public onlyOwner`: Unpauses the vault operations.
+-   `paused() public view returns (bool)`: Checks if the vault is currently paused.
+-   `reportProfit(uint256 _profitAmount) public`: Allows a strategy to report profit back to the vault.
+
+### Events
+
+-   `Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)`:
+    Emitted when assets are deposited into the vault.
+-   `Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)`:
+    Emitted when assets are withdrawn from the vault.
+-   `Approval(address indexed owner, address indexed spender, uint256 value)`:
+    Standard ERC-20 approval event for the vault shares (aTokens).
+-   `Transfer(address indexed from, address indexed to, uint256 value)`:
+    Standard ERC-20 transfer event for the vault shares (aTokens).
+-   `OwnershipTransferred(address indexed previousOwner, address indexed newOwner)`:
+    Emitted when the ownership of the contract is transferred.
+-   `Paused(address account)`: Emitted when the contract is paused.
+-   `Unpaused(address account)`: Emitted when the contract is unpaused.
+
+## IStrategy.sol
+
+The `IStrategy.sol` interface defines the standard for all yield-generating strategies that can be integrated with the `AuraVault`. By adhering to this interface, strategies ensure compatibility and secure interaction with the main vault contract.
+
+### Core Interface Functions (Expected on Strategy Contracts)
+
+-   `deposit(address _asset, uint256 _amount) external returns (uint256)`:
+    Deposits a specified `_amount` of `_asset` into the strategy.
+-   `withdraw(address _asset, uint256 _amount) external returns (uint256)`:
+    Withdraws a specified `_amount` of `_asset` from the strategy.
+-   `harvest() external returns (uint256)`:
+    Executes the strategy's yield-generation process and reports profits back to the vault.
+-   `assets() external view returns (uint256)`:
+    Returns the total amount of assets currently managed by the strategy.
+-   `asset() external view returns (address)`:
+    Returns the address of the underlying asset the strategy works with.
