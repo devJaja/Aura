@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Web3Provider } from "./Web3Provider";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -9,6 +10,8 @@ export const metadata: Metadata = {
   description: "Earn stable, transparent yields from AI-powered global arbitrage",
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -16,8 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} bg-neutral-950 text-neutral-100 antialiased`}>
-        {children}
+      <body
+        className={`${inter.className} bg-neutral-950 text-neutral-100 antialiased`}
+      >
+        <Web3Provider>{children}</Web3Provider>
       </body>
     </html>
   );
