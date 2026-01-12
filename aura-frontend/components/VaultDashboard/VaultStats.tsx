@@ -1,33 +1,57 @@
-import { ArrowUpRight, Banknote, BrainCircuit, Scale } from "lucide-react";
+"use client";
 
-const stats = [
-  {
-    name: "Total Value Locked (TVL)",
-    value: "$1,234,567",
-    change: "+4.2% MoM",
-    icon: Banknote,
-  },
-  {
-    name: "Vault APY",
-    value: "12.8%",
-    change: "Realised",
-    icon: ArrowUpRight,
-  },
-  {
-    name: "Current Vault Strategy",
-    value: "RWA Arbitrage #3",
-    change: "Stable",
-    icon: BrainCircuit,
-  },
-  {
-    name: "Total Profit Generated",
-    value: "$87,654",
-    change: "Since Inception",
-    icon: Scale,
-  },
-];
+import { ArrowUpRight, Banknote, BrainCircuit, Scale } from "lucide-react";
+import { useReadContract } from "wagmi";
+import { formatUnits } from "viem";
+import { AURA_VAULT_ABI, AURA_VAULT_ADDRESS } from "@/lib/contracts";
+import { mainnet } from "wagmi/chains";
 
 export const VaultStats = () => {
+  const { data: totalAssetsData } = useReadContract({
+    abi: AURA_VAULT_ABI,
+    address: AURA_VAULT_ADDRESS,
+    functionName: "totalAssets",
+    chainId: mainnet.id,
+  });
+
+  const { data: vaultNameData } = useReadContract({
+    abi: AURA_VAULT_ABI,
+    address: AURA_VAULT_ADDRESS,
+    functionName: "name",
+    chainId: mainnet.id,
+  });
+
+  const formattedTotalAssets = totalAssetsData
+    ? `$${Number(formatUnits(totalAssetsData, 6)).toLocaleString()}` // Assuming 6 decimals for USDC/DAI
+    : "$0";
+
+  const stats = [
+    {
+      name: "Total Value Locked (TVL)",
+      value: formattedTotalAssets,
+      change: "+4.2% MoM",
+      icon: Banknote,
+    },
+    {
+      name: "Vault APY",
+      value: "12.8%",
+      change: "Realised",
+      icon: ArrowUpRight,
+    },
+    {
+      name: "Current Vault Strategy",
+      value: vaultNameData || "RWA Arbitrage #3",
+      change: "Stable",
+      icon: BrainCircuit,
+    },
+    {
+      name: "Total Profit Generated",
+      value: "$87,654",
+      change: "Since Inception",
+      icon: Scale,
+    },
+  ];
+
   return (
     <section>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
