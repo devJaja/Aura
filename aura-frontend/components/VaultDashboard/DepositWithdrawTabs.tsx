@@ -114,7 +114,7 @@ const DepositTab = () => {
       ? parseUnits(depositAmount as `${number}`, assetDecimals)
       : 0n;
 
-  const needsApproval = allowance !== undefined && parsedDepositAmount > allowance;
+  const needsApproval = allowance !== undefined && parsedDepositAmount > (allowance as bigint);
 
   // Approve transaction
   const {
@@ -178,8 +178,8 @@ const DepositTab = () => {
         <div className="text-right">
           <p className="text-sm text-neutral-500">Your Balance</p>
           <p className="font-mono text-lg">
-            {userAssetBalance !== undefined && assetDecimals
-              ? formatUnits(userAssetBalance, assetDecimals)
+            {userAssetBalance !== undefined && userAssetBalance !== null && typeof assetDecimals === "number"
+              ? formatUnits(userAssetBalance as bigint, assetDecimals)
               : "0.00"} {assetSymbol || "USDC"}
           </p>
         </div>
@@ -293,8 +293,8 @@ const WithdrawTab = () => {
         <div className="text-right">
           <p className="text-sm text-neutral-500">Your Vault Position</p>
           <p className="font-mono text-lg">
-            {userVaultBalance !== undefined && vaultDecimals
-              ? formatUnits(userVaultBalance, vaultDecimals)
+            {userVaultBalance !== undefined && userVaultBalance !== null && typeof vaultDecimals === "number"
+              ? formatUnits(userVaultBalance as bigint, vaultDecimals)
               : "0.00"} {vaultSymbol || "aToken"}
           </p>
         </div>
